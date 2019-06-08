@@ -29,6 +29,7 @@ export class MemberEditComponent implements OnInit {
 
   ngOnInit() {
     this.loadUserData();
+    this.authService.currentProfilePhotoUrl.subscribe(photoUrl => this.user.photoUrl = photoUrl);
   }
 
   loadUserData() {
@@ -45,4 +46,9 @@ export class MemberEditComponent implements OnInit {
       this.alertify.error(error);
     });
   }
+
+  updateMainPhoto(photoUrl) {
+    this.user.photoUrl = photoUrl;
+  }
+
 }
