@@ -83,7 +83,7 @@
 <div class="row">
   <div class="col-sm-3 mb-3" *ngFor="let photo of photos">
     <div class="text-center">
-      <img class="img-thumbnail p-2" src="{{ photo.url }}" />
+      <img class="img-thumbnail p-2" src="{{ photo.url || '../../../assets/user.png' }}" />
       <button 
         type="button" 
         class="btn btn-sm btn-primary mr-2" 

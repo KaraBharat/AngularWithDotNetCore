@@ -58,6 +58,10 @@ export class PhotoEditorComponent implements OnInit {
         };
 
         this.photos.push(photo);
+
+        if(res.isMain) {
+          this.authService.changeMemberProfilePhoto(photo.url, true);
+        }
       }
     };
   }

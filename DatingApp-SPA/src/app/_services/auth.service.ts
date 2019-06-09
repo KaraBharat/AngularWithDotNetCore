@@ -44,8 +44,8 @@ export class AuthService {
       );
   }
 
-  register(registerData: any) {
-    return this.http.post(this.baseUrl + 'register', registerData);
+  register(user: User) {
+    return this.http.post(this.baseUrl + 'register', user);
   }
 
   loggedIn() {
@@ -66,7 +66,10 @@ export class AuthService {
 
     const user: User = JSON.parse(localStorage.getItem('user'));
     this.currentUser = user;
-    this.changeMemberProfilePhoto(this.currentUser.photoUrl, false);
+
+    if (this.currentUser) {
+      this.changeMemberProfilePhoto(this.currentUser.photoUrl, false);
+    }
   }
 
   currentUserToken() {
