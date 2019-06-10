@@ -87,6 +87,7 @@ namespace DatingApp.API
         {
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
+            services.AddScoped<LogUserActivity>();
         }
 
         private void ExceptionHandling(IApplicationBuilder app)
