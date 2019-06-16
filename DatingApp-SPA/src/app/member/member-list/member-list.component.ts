@@ -23,7 +23,8 @@ export class MemberListComponent implements OnInit {
     private authService: AuthService,
     private alertify: AlertifyService,
     private route: ActivatedRoute) { }
-    public genderList = [{ value: 'male', display: 'Males' }, { value: 'female', display: 'Females' }];
+
+  public genderList = [{ value: 'male', display: 'Males' }, { value: 'female', display: 'Females' }];
 
   ngOnInit() {
     this.user = this.authService.getCurrentUser();
