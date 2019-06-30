@@ -40,6 +40,7 @@ export class AuthService {
             localStorage.setItem('user', JSON.stringify(user.user));
             this.decodeUserToken();
             this.changeMemberProfilePhoto(this.currentUser.photoUrl, false);
+            this.messageService.unreadMessageCounter.started = false;
             this.messageService.getUnReadCount(user.user.id);
           }
         })

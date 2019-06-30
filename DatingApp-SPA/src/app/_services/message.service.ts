@@ -13,7 +13,7 @@ export class MessageService {
 
   baseUrl = environment.APIUrl + 'users/';
   public unreadMessageCounter: any = {};
-
+  unreadMessageTimerId = null;
   constructor(private http: HttpClient) { }
 
   getMessages(id: number, page?, itemsPerPage?, messageContainer?): Observable<PaginatedResults<Message[]>> {
@@ -62,7 +62,12 @@ export class MessageService {
       .subscribe(count => this.unreadMessageCounter.unreadMessageCount = count);
 
     if (!this.unreadMessageCounter.started) {
-      setInterval(() =>
+
+      if (this.unreadMessageTimerId) {
+        clearTimeout(this.unreadMessageTimerId);
+      }
+
+      this.unreadMessageTimerId = setInterval(() =>
         this.http.get<number>(this.baseUrl + userId + '/messages/unread/count')
         .subscribe(count => this.unreadMessageCounter.unreadMessageCount = count)
       , 120000);
