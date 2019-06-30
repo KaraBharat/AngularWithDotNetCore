@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../_models/user';
 import { Pagination, PaginatedResults } from '../_models/pagination';
 import { UserService } from '../_services/user.service';
-import { AuthService } from '../_services/auth.service';
 import { AlertifyService } from '../_services/alertify.service';
 import { ActivatedRoute } from '@angular/router';
 
@@ -20,7 +19,6 @@ export class ListsComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private authService: AuthService,
     private alertify: AlertifyService,
     private route: ActivatedRoute) { }
 
