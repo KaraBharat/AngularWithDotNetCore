@@ -61,6 +61,7 @@ export class AuthService {
     localStorage.removeItem('user');
     this.decodedToken = null;
     this.currentUser = null;
+    clearTimeout(this.messageService.unreadMessageTimerId);
   }
 
   decodeUserToken() {

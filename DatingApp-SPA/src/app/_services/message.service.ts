@@ -13,7 +13,7 @@ export class MessageService {
 
   baseUrl = environment.APIUrl + 'users/';
   public unreadMessageCounter: any = {};
-  unreadMessageTimerId = null;
+  public unreadMessageTimerId = null;
   constructor(private http: HttpClient) { }
 
   getMessages(id: number, page?, itemsPerPage?, messageContainer?): Observable<PaginatedResults<Message[]>> {
