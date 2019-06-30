@@ -22,9 +22,7 @@ export class NavComponent implements OnInit {
 
   ngOnInit() {
     this.authService.currentProfilePhotoUrl.subscribe(photoUrl => this.profilePhotoUrl = photoUrl);
-    if (this.authService.getCurrentUser()
-      && this.messageService.unreadMessageCounter
-      && !this.messageService.unreadMessageCounter.started) {
+    if (this.authService.getCurrentUser()) {
       this.messageService.getUnReadCount(this.authService.getCurrentUser().id);
     }
   }

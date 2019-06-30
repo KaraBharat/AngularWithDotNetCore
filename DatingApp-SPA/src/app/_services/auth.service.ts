@@ -1,3 +1,4 @@
+import { MessageService } from './message.service';
 import { User } from './../_models/user';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -18,7 +19,7 @@ export class AuthService {
   profilePhotoUrl = new BehaviorSubject<string>('../../assets/user.png');
   currentProfilePhotoUrl = this.profilePhotoUrl.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private messageService: MessageService) { }
 
   changeMemberProfilePhoto(photoUrl: string, updateInLocalStorage: boolean) {
     this.profilePhotoUrl.next(photoUrl);
@@ -39,6 +40,7 @@ export class AuthService {
             localStorage.setItem('user', JSON.stringify(user.user));
             this.decodeUserToken();
             this.changeMemberProfilePhoto(this.currentUser.photoUrl, false);
+            this.messageService.getUnReadCount(user.user.id);
           }
         })
       );

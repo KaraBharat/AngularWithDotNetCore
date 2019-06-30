@@ -61,12 +61,14 @@ export class MessageService {
     this.http.get<number>(this.baseUrl + userId + '/messages/unread/count')
       .subscribe(count => this.unreadMessageCounter.unreadMessageCount = count);
 
-    this.unreadMessageCounter.started = true;
+    if (!this.unreadMessageCounter.started) {
+      setInterval(() =>
+        this.http.get<number>(this.baseUrl + userId + '/messages/unread/count')
+        .subscribe(count => this.unreadMessageCounter.unreadMessageCount = count)
+      , 120000);
 
-    setInterval(() =>
-      this.http.get<number>(this.baseUrl + userId + '/messages/unread/count')
-      .subscribe(count => this.unreadMessageCounter.unreadMessageCount = count)
-    , 120000);
+      this.unreadMessageCounter.started = true;
+    }
   }
 
   markAsRead(id: number, userId: number) {
