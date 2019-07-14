@@ -81,15 +81,23 @@
 </div>
 
 <div class="row">
-  <div class="col-sm-3 mb-3" *ngFor="let photo of photos">
+  <div class="col-sm-3 mb-3 img-wrapper" *ngFor="let photo of photos">
     <div class="text-center">
-      <img class="img-thumbnail p-2" src="{{ photo.url || '../../../assets/user.png' }}" />
+      <img 
+        class="img-thumbnail p-2" 
+        src="{{ photo.url || '../../../assets/user.png' }}" 
+        [ngClass]="!photo.isApproved && 'not-approved'"/>
+
+        <div class="text-center img-text" *ngIf="!photo.isApproved">
+          <span class="text-danger">Not Approved!</span>
+        </div>
+
       <button 
         type="button" 
         class="btn btn-sm btn-primary mr-2" 
         (click)="setMainPhoto(photo)"
         [ngClass]="photo.isMain ? 'btn-success' : 'btn-secondary'" 
-        [disabled]="photo.isMain">Main</button>
+        [disabled]="photo.isMain || !photo.isApproved">Main</button>
       <button 
         type="button" 
         class="btn btn-sm btn-danger"

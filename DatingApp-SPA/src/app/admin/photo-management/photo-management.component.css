@@ -1,0 +1,10 @@
+
+.photo-container {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.photo-buttons {
+    text-align: center;
+}

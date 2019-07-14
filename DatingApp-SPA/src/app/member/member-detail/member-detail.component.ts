@@ -1,3 +1,4 @@
+import { UserService } from 'src/app/_services/user.service';
 import { AlertifyService } from './../../_services/alertify.service';
 import { User } from './../../_models/user';
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -22,6 +23,8 @@ export class MemberDetailComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private userService: UserService,
+    private alertify: AlertifyService,
     private route: ActivatedRoute) {
       this.currentUserId = this.authService.getCurrentUser().id;
     }
@@ -72,5 +75,14 @@ export class MemberDetailComponent implements OnInit {
 
   selectTab(tabId: number) {
     this.memberTabs.tabs[tabId].active = true;
+  }
+
+  likeUser() {
+    const id = this.authService.getCurrentUser().id;
+    this.userService.likeUser(id, this.user.id).subscribe(() => {
+      this.alertify.success('You have liked : ' + this.user.knownAs);
+    }, error => {
+      this.alertify.error(error);
+    });
   }
 }

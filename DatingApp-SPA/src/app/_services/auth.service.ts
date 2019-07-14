@@ -83,5 +83,18 @@ export class AuthService {
   getCurrentUser(): User {
     return JSON.parse(localStorage.getItem('user'));
   }
+
+  roleMatch(allowedRoles): boolean {
+    let isMatch = false;
+    const userRoles = this.decodedToken.role as Array<string>;
+    allowedRoles.forEach(role => {
+      if (userRoles.includes(role)) {
+        isMatch = true;
+        return;
+      }
+    });
+
+    return isMatch;
+  }
 }
 

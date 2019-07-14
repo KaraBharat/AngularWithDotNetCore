@@ -22,6 +22,10 @@ using DatingApp.API.Helpers;
 using Newtonsoft.Json;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using DatingApp.API.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace DatingApp.API
 {
@@ -39,8 +43,49 @@ namespace DatingApp.API
         {
             services.AddDbContext<DataContext>(x => x.UseMySql(Configuration.GetConnectionString("DefaultConnection"))
                 .ConfigureWarnings(warning => warning.Ignore(CoreEventId.IncludeIgnoredWarning)));
+
+            IdentityBuilder builer = services.AddIdentityCore<User>(opt =>
+            {
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredLength = 4;
+                opt.Password.RequireUppercase = false;
+            });
+
+            builer = new IdentityBuilder(builer.UserType, typeof(Role), builer.Services);
+            builer.AddEntityFrameworkStores<DataContext>();
+            builer.AddRoleValidator<RoleValidator<Role>>();
+            builer.AddRoleManager<RoleManager<Role>>();
+            builer.AddSignInManager<SignInManager<User>>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });    
+
+            services.AddAuthorization(option => {
+                option.AddPolicy("RequireAdminRole",policy => policy.RequireRole("Admin"));
+                option.AddPolicy("ModeratePhotoRole",policy => policy.RequireRole("Admin","Moderator"));
+                option.AddPolicy("VIPOnly",policy => policy.RequireRole("VIP"));
+            });
+
+            services.AddMvc(options => {
+
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                options.Filters.Add(new AuthorizeFilter(policy));
                 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(opt =>
                 {
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -48,49 +93,10 @@ namespace DatingApp.API
 
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddCors();
+            Mapper.Reset();
             services.AddAutoMapper();
             services.AddTransient<Seed>();
             ConfigureRepositories(services);
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
-        }
-
-        public void ConfigureDevelopmentServices(IServiceCollection services)
-        {
-            services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddJsonOptions(opt =>
-                {
-                    opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                });
-
-            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
-            services.AddCors();
-            services.AddAutoMapper();
-            services.AddTransient<Seed>();
-            ConfigureRepositories(services);
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,7 +114,7 @@ namespace DatingApp.API
             }
 
             // app.UseHttpsRedirection();
-            // seeder.SeedUsers(); // Only for development purpose
+            seeder.SeedUsers(); // Only for development purpose
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseDefaultFiles();
@@ -125,8 +131,9 @@ namespace DatingApp.API
 
         private void ConfigureRepositories(IServiceCollection services)
         {
-            services.AddScoped<IAuthRepository, AuthRepository>();
+            // services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
+            services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<LogUserActivity>();
         }
 

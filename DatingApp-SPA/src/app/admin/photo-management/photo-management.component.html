@@ -1,0 +1,21 @@
+<div class="photo-wrapper">
+  <div class="row">
+    <div class="col-3 photo-container mb-1" *ngFor="let photo of photos">
+      
+      <strong>{{ photo.userName }}</strong>
+      
+      <img
+        [src]="photo.url"
+        alt="{{ photo.userName }}"
+        class="img img-thumbnail"/>
+
+      <div class="photo-buttons">
+        <button
+          class="btn btn-sm btn-danger mr-3"
+          (click)="rejectPhoto(photo.id)">Reject</button>
+
+        <button class="btn btn-sm btn-success" (click)="approvePhoto(photo.id)">Approve</button>
+      </div>
+    </div>
+  </div>
+</div>
